@@ -1,0 +1,11 @@
+{
+  "name": "sender",
+  "version": "1.0.0",
+  "dependencies": {
+  },
+  "server": {
+    "host": "127.0.0.1",
+    "port": 7334
+  },
+  "targetFile": "./sender/file"
+}

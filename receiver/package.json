@@ -1,0 +1,8 @@
+{
+  "name": "receiver",
+  "version": "1.0.0",
+  "dependencies": {
+  },
+  "port": 7334,
+  "targetDir": "./receiver/dist"
+}
