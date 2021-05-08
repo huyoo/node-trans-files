@@ -6,7 +6,7 @@ const model = {
   sendFile: (data, server) => {
     const {name, content} = data;
 
-    const file = new Buffer(content).toString();
+    const file = Buffer.from(content).toString();
     writeFile(targetDir + name, file)
       .then(() => {
         server.send('sendFileResult', {path: name, success: true})

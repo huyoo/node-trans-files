@@ -1,8 +1,10 @@
 const net = require('net');
 const emitter = require("./emitter");
 const model = require("./index");
+const Transcoder = require("./Transcoder");
 const {port} = require("./package.json");
 
+const transcoder = new Transcoder();
 const listenPort = port || 7334;
 
 const server = net.createServer();
@@ -18,33 +20,51 @@ server.on('connection', (socket) => {
    * @param callback
    */
   socket.send = (path, data, callback) => {
-    socket.write(JSON.stringify({
-      path,
-      content: data
-    }), callback)
+    socket.write(
+      transcoder.encode(
+        JSON.stringify({
+          path,
+          content: data
+        })
+      ),
+      callback
+    )
   }
 
   socket.on('data', buffer => {
 
-    bufferCache += buffer.toString()
-
-    let req;
-
-    try {
-      req = JSON.parse(bufferCache);
-    } catch (e) {
-      if (e.message === 'Unexpected end of JSON input') {
-        return;
-      } else {
-        throw e;
-      }
+    if (bufferCache) {
+      buffer = Buffer.concat([bufferCache, buffer])
     }
 
-    const path = req?.path;
-    const content = req?.content;
+    let packageLength = 0;
 
-    emitter.emit(path, content, socket);
-    bufferCache = '';
+    while (packageLength = transcoder.getPackageLength(buffer)) {
+      const bufferPackage = buffer.slice(0, packageLength) // 取出最前面一个完整的包
+      buffer = buffer.slice(packageLength)  // 截取出剩下的所有数据
+
+      const result = transcoder.decode(bufferPackage) // 对一个完整的包解码
+
+      let req;
+
+      try {
+        req = JSON.parse(result.body);
+      } catch (e) {
+        if (e.message === 'Unexpected end of JSON input') {
+          return;
+        } else {
+          throw e;
+        }
+      }
+
+      const path = req?.path;
+      const content = req?.content;
+
+      emitter.emit(path, content, socket);
+    }
+
+
+    bufferCache = buffer;
   })
 
   socket.on('error', (error) => {

@@ -1,22 +1,10 @@
-const {mkdir, readdir, stat, unlink, rmdir} = require('fs/promises');
+const {mkdir, readdir, unlink, rmdir} = require('fs/promises');
 const {statSync} = require('fs');
 const path = require('path')
 const {targetDir} = require("./package.json")
 
 async function bulkCreateDir(list) {
-  const results = await Promise.all(list.map(item => mkdir(targetDir + item, {recursive: true})));
-
-  // const errDirs = results.filter(res => {
-  //   console.log('res=', res)
-  //   return !res.success || res.error
-  // });
-
-  // console.log(errDirs)
-  //
-  // if (errDirs.length) {
-  //   return false
-  // }
-
+  await Promise.all(list.map(item => mkdir(targetDir + item, {recursive: true})));
   return true
 }
 
