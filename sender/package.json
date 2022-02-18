@@ -1,6 +1,10 @@
 {
   "name": "sender",
   "version": "1.0.0",
+  "scripts": {
+    "backup:api": "node app.js",
+    "backup:sample": "node app.js"
+  },
   "dependencies": {
   },
   "server": {

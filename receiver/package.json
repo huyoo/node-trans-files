@@ -1,6 +1,9 @@
 {
   "name": "receiver",
   "version": "1.0.0",
+  "scripts": {
+    "start": "pm2 app.js"
+  },
   "dependencies": {
   },
   "port": 7334,
